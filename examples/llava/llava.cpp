@@ -11,9 +11,6 @@
 #include <limits>
 #include <vector>
 
-#define die(msg)          do { fputs("error: " msg "\n", stderr);                exit(1); } while (0)
-#define die_fmt(fmt, ...) do { fprintf(stderr, "error: " fmt "\n", __VA_ARGS__); exit(1); } while (0)
-
 #define LOG_INF(...) do { fprintf(stdout, __VA_ARGS__); } while (0)
 #define LOG_WRN(...) do { fprintf(stderr, __VA_ARGS__); } while (0)
 #define LOG_ERR(...) do { fprintf(stderr, __VA_ARGS__); } while (0)
@@ -498,10 +495,14 @@ static bool load_file_to_bytes(const char* path, unsigned char** bytesOut, long 
     errno = 0;
     size_t ret = fread(buffer, 1, fileSize, file); // Read the file into the buffer
     if (ferror(file)) {
-        die_fmt("read error: %s", strerror(errno));
+        LOG_ERR("read error: %s", strerror(errno));
+        fclose(file);
+        return false;
     }
     if (ret != (size_t) fileSize) {
-        die("unexpectedly reached end of file");
+        LOG_ERR("unexpectedly reached end of file");
+        fclose(file);
+        return false;
     }
     fclose(file); // Close the file
 
