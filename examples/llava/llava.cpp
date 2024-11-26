@@ -503,11 +503,13 @@ static bool load_file_to_bytes(const char* path, unsigned char** bytesOut, long 
     size_t ret = fread(buffer, 1, fileSize, file); // Read the file into the buffer
     if (ferror(file)) {
         LOG_ERR("read error: %s", strerror(errno));
+        free(buffer);
         fclose(file);
         return false;
     }
     if (ret != (size_t) fileSize) {
         LOG_ERR("unexpectedly reached end of file");
+        free(buffer);
         fclose(file);
         return false;
     }
