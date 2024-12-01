@@ -42,7 +42,12 @@ option(GGML_BACKEND_DL   "ggml: build backends as dynamic libraries (requires BU
 # TODO: mark all options as advanced when not GGML_STANDALONE
 
 if (APPLE)
-    set(GGML_METAL_DEFAULT ON)
+    if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+        # Metal is not supported on Intel CPUs.
+        set(GGML_METAL_DEFAULT OFF)
+    else()
+        set(GGML_METAL_DEFAULT ON)
+    endif()
     set(GGML_BLAS_DEFAULT ON)
     set(GGML_BLAS_VENDOR_DEFAULT "Apple")
 else()
